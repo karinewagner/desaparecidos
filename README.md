@@ -1,69 +1,109 @@
-# React + TypeScript + Vite
+# 👮‍♀️ Pessoas Desaparecidas - SPA (React + TypeScript + Tailwind)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![Badge](https://img.shields.io/badge/Status-Desenvolvimento%20Concluído-green) ![License](https://img.shields.io/badge/License-MIT-blue)
 
-Currently, two official plugins are available:
+Aplicação front-end desenvolvida como parte de avaliação técnica do processso para a vaga de Desenvolvedor, realizado pela Desenvolve MT. Consome a **API pública da Polícia Judiciária Civil de Mato Grosso** para consulta de pessoas desaparecidas e localizadas.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+#### 🔗 Link para visualização do projeto: https://desaparecido.netlify.app/
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 Tecnologias utilizadas
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- [React 18](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) - Framework principal para desenvolvimento da aplicação.
+- [React Router DOM](https://reactrouter.com/) - Para carregamento eficiente das páginas.
+- [Axios](https://axios-http.com/) - Para requisições HTTP
+- [Tailwind CSS v4](https://tailwindcss.com/) - Para estilização responsiva e moderna.
+- [Vite](https://vitejs.dev/) - Para build e dev server
+- [Docker](https://www.docker.com/) - Para empacotamento da aplicação em um container isolado.
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 📌 Funcionalidades
+
+### 1️⃣ Tela Inicial
+- 📌 Exibe uma lista de pessoas desaparecidas ou localizadas em forma de cards.
+- 📷 Cada card contém a imagem e informações básicas sobre o caso.
+- 🔄 Implementação de paginação para exibir pelo menos 10 registros por vez.
+- 🔍 Barra de pesquisa para filtrar os resultados com base nos parâmetros da API.
+
+### 2️⃣ Tela de Detalhamento
+- 🔗 Ao clicar no botão de mais detalhes em um card, o usuário é redirecionado para a tela de detalhes do desaparecido.
+- 📝 Exibe informações adicionais sobre a pessoa.
+- 🎨 Destaque visual para a situação do desaparecido (desaparecido/localizado).
+
+### 3️⃣ Tela de Inclusão de Informações
+- 📨 Permite ao cidadão enviar informações sobre uma pessoa desaparecida.
+- 🔢 Implementação de máscaras de formatação para entrada de dados.
+- 🖼 Upload de fotografias.
+
+---
+## 🛠 Instalação e Execução
+
+### ⚡ Pré-requisitos
+Certifique-se de ter instalado:
+- [Node.js](https://nodejs.org/)
+- [React 18](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- [Docker](https://www.docker.com/)
+
+### 🔧 Rodando o projeto localmente
+
+1️⃣ Clone o repositório:
+```bash
+git clone https://github.com/karinewagner/desaparecidos.git
+```
+2️⃣ Acesse o diretório do projeto:
+```bash
+cd desaparecidos
+```
+3️⃣ Instale as dependências:
+```bash
+npm install
+```
+4️⃣ Rode em ambiente de desenvolvimento:
+```bash
+npm run dev
+```
+5️⃣ Acesse no navegador:
+
+http://localhost:5173/
+
+
+### 🐳 Rodando com Docker
+1️⃣ Construa a imagem Docker:
+```bash
+docker build -t karine-desaparecidos .
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+2️⃣ Execute o container:
+```bash
+docker run -p 8080:80 karine-desaparecidos
 ```
+
+3️⃣ Acesse no navegador:
+
+http://localhost:8080/
+
+
+> **Nota**: Certifique-se de que o Docker está instalado e rodando em sua máquina.
+
+---
+## 🔗 API utilizada
+
+Documentação dos endpoints:  
+[https://abitus-api.geia.vip/swagger-ui/index.html](https://abitus-api.geia.vip/swagger-ui/index.html)
+
+### Endpoints principais
+- `GET /v1/pessoas/aberto/filtro` → busca de registros
+- `GET /v1/pessoas/{id}` → detalhes de pessoa
+- `POST /v1/ocorrencias/informacoes-desaparecido` → envio de informações adicionais
+- `GET /v1/pessoas/aberto/estatistico` → estatísticas de desaparecidos/localizados
+
+---
+## **📬 Contato**
+
+Para dúvidas ou sugestões, entre em contato pelo e-mail: [karinedwagner@gmail.com](mailto:karinedwagner@gmail.com)
+
+---
+## **📜 Licença**
+Este projeto é de uso livre para estudo e melhorias.
