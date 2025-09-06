@@ -1,11 +1,5 @@
 import { useEffect } from "react";
-
-interface AlertProps {
-  message: string;
-  type?: "success" | "error" | "info";
-  duration?: number;
-  onClose: () => void;
-}
+import type { AlertProps } from "../../types/alert";
 
 export default function Alert({
   message,
