@@ -12,16 +12,20 @@ import Footer from './components/layout/Footer';
 function App() {
   return (
     <Router>
-      <Header />
+      <div className="min-h-screen flex flex-col">
+        <Header />
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/details/:id" element={<Details />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-      
-      <BackToTop />
-      <Footer />
+        <main className="flex-1">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/details/:id" element={<Details />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+                
+        <BackToTop />
+        <Footer />
+      </div>
     </Router>
   );
 }
