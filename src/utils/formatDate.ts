@@ -1,4 +1,3 @@
-// src/utils/date.ts
 const DEFAULT_TZ = "America/Sao_Paulo";
 
 function toDate(input?: string | number | Date): Date | null {
@@ -13,7 +12,6 @@ function toDate(input?: string | number | Date): Date | null {
   return isNaN(d.getTime()) ? null : d;
 }
 
-/** Ex.: 06/09/2025 às 16:13 */
 export function formatDateTimeBR(
   input?: string | number | Date,
   opts?: { tz?: string }
@@ -40,7 +38,6 @@ export function formatDateTimeBR(
   return `${datePart} às ${timePart}`;
 }
 
-/** Ex.: 06/09/2025 */
 export function formatDateBR(
   input?: string | number | Date,
   opts?: { tz?: string }

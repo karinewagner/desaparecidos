@@ -62,14 +62,12 @@ export default function Home() {
 
 return (
   <div className="flex flex-col max-w-7xl mx-auto gap-2 sm:gap-4 lg:gap-6 px-2">
-    {/* card de busca sobrepondo o hero */}
     <div className="-mt-20 lg:-mt-30 relative z-10">
       <div className="rounded-xl shadow-xl bg-white/95 backdrop-blur-sm">
         <SearchForm onFilter={setFilters} />
       </div>
     </div>
 
-    {/* resto da página */}
     <div className="w-full" id="list">
       {isLoading ? (
         <div className="flex flex-col gap-2 justify-center items-center w-full bg-white p-4 rounded-md shadow-md">
