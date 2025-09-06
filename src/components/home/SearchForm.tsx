@@ -55,7 +55,7 @@ export default function SearchForm({ onFilter }: Props) {
         e.preventDefault();
         sendFilters();
       }}
-      className="p-4 rounded-md shadow-md flex flex-col bg-transparent"
+      className="p-4 md:p-6 lg:px-10 rounded-md shadow-md flex flex-col bg-transparent"
     >
       <div className="flex flex-col text-center mb-2 md:mb-4">
         <h2 className="text-lg md:text-2xl font-semibold">FAÇA SUA BUSCA</h2>
