@@ -60,41 +60,43 @@ export default function Home() {
     setFilters({ ...filters, pagina: page - 1, porPagina: size });
   };
 
-  return (
-    <div className="flex flex-col max-w-7xl mx-auto gap-2 sm:gap-4 lg:gap-6 px-2">
-
-      <SearchForm onFilter={setFilters} />
-
-      <div className="w-full" id="list">
-        {isLoading ? (
-          <div className="flex flex-col gap-2 justify-center items-center w-full bg-white p-4 rounded-md shadow-md">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-            <span>Carregando, aguarde...</span>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 min-[425px]:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4 lg:gap-6">
-            {people.map((person) => (
-              <PersonCard key={person.id} missingPerson={person} />
-            ))}
-          </div>
-        )}
+return (
+  <div className="flex flex-col max-w-7xl mx-auto gap-2 sm:gap-4 lg:gap-6 px-2">
+    {/* card de busca sobrepondo o hero */}
+    <div className="-mt-20 lg:-mt-30 relative z-10">
+      <div className="rounded-xl shadow-xl bg-white/95 backdrop-blur-sm">
+        <SearchForm onFilter={setFilters} />
       </div>
+    </div>
 
-      <div className="flex justify-center rounded-md shadow-md bg-gray-50 px-2">
-        <Pagination
-          currentPage={pageIndex + 1}
-          totalPages={totalPages}
-          onPageChange={(page) => handlePageChange(page, pageSize)}
-        />
-      </div>
-
-      <p className="text-sm text-gray-600">
-        Total de registros encontrados: {length}
-      </p>
-
-      {alert && (
-        <Alert message={alert} type="error" onClose={() => setAlert(null)} />
+    {/* resto da página */}
+    <div className="w-full" id="list">
+      {isLoading ? (
+        <div className="flex flex-col gap-2 justify-center items-center w-full bg-white p-4 rounded-md shadow-md">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          <span>Carregando, aguarde...</span>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 min-[425px]:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4 lg:gap-6">
+          {people.map((person) => (
+            <PersonCard key={person.id} missingPerson={person} />
+          ))}
+        </div>
       )}
     </div>
-  );
+
+    <div className="flex justify-center rounded-md shadow-md bg-gray-50 px-2">
+      <Pagination
+        currentPage={pageIndex + 1}
+        pageSize={pageSize}
+        totalItems={length}
+        pageSizeOptions={[10, 15, 20, 30]}
+        onPageChange={(page) => handlePageChange(page, pageSize)}
+        onPageSizeChange={(size) => handlePageChange(1, size)}
+      />
+    </div>
+
+    {alert && <Alert message={alert} type="error" onClose={() => setAlert(null)} />}
+  </div>
+);
 }
