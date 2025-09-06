@@ -38,7 +38,7 @@ export default function BackToTop({ threshold = 0.5 }: Props) {
       onClick={handleClick}
       aria-label="Voltar ao topo"
       title="Voltar ao topo"
-      className={`fixed right-4 md:right-6 bottom-20 z-50 rounded-full shadow-lg bg-blue-700 text-white
+      className={`fixed right-4 md:right-6 bottom-2 2xl:bottom-20 z-50 rounded-2xl shadow-lg bg-blue-700 text-white
                   p-3 md:p-3.5 hover:bg-blue-900 focus:outline-none focus-visible:ring-2
                   focus-visible:ring-blue-300 transition duration-300
                   ${visible ? "opacity-100 translate-y-0" : "opacity-0 pointer-events-none translate-y-3"}`}
