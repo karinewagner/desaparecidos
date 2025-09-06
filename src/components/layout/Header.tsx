@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { IStatisticsData } from "../../types/header";
 import { getStatisticsData } from "../../services";
 import Alert from "../common/Alert";
+import CountUp from "../common/CountUp";
 
 export default function Header() {
   const [statistics, setStatistics] = useState<IStatisticsData>({
@@ -49,15 +50,19 @@ export default function Header() {
           <div className="max-w-7xl mx-auto px-2 pb-4 grid grid-cols-2 gap-4 text-white">
             <div className="col-span-1 flex flex-row md:flex-col gap-2 items-center">
               <div className="text-sm lg:text-base opacity-90">Desaparecidos</div>
-              <div className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tabular-nums">
-                {statistics.quantPessoasDesaparecidas}
-              </div>
+              <CountUp
+                value={statistics.quantPessoasDesaparecidas}
+                duration={1300}
+                className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tabular-nums drop-shadow"
+              />
             </div>
             <div className="col-span-1 flex flex-row md:flex-col gap-2 items-center">
               <div className="text-sm lg:text-base opacity-90">Localizados</div>
-              <div className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tabular-nums">
-                {statistics.quantPessoasEncontradas}
-              </div>
+              <CountUp
+                value={statistics.quantPessoasEncontradas}
+                duration={1300}
+                className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tabular-nums drop-shadow"
+              />
             </div>
           </div>
 
