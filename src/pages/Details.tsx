@@ -44,7 +44,7 @@ export default function Details() {
   };
 
   return (
-    <div className="flex flex-col max-w-3xl md:max-w-4xl mx-auto my-4">
+    <div className="-mt-20 lg:-mt-30 relative z-10 flex flex-col max-w-3xl md:max-w-4xl mx-auto my-4">
       {isLoading ? (
         <div className="flex flex-col gap-2 justify-center items-center w-full bg-white p-4 rounded-md shadow-md">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
@@ -52,33 +52,33 @@ export default function Details() {
         </div>
       ) : person ? (
         <div className="bg-white shadow rounded p-4">
-          <div className="mb-4">
-            <Link
-              to="/"
-              className="flex items-center gap-1 text-xl p-2 rounded-xl shadow hover:bg-gray-100"
-            >
-              ⬅ Voltar
-            </Link>
-          </div>
-
           <div className="flex flex-col sm:flex-row sm:justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold">{person.nome}</h1>
-              <p className="text-gray-600">
-                {person.idade} anos - {person.sexo}
-              </p>
+            <div className="grid grid-rows-2 gap-2">
+              <div className="flex items-start">
+                <Link
+                    to="/"
+                    className="flex items-center gap-1 text-xl px-4 py-2 rounded-xl shadow border border-gray-100 hover:bg-gray-200"
+                  >
+                    ⬅ Voltar
+                </Link>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold">{person.nome}</h1>
+                <p className="text-gray-600">
+                  {person.idade} anos - {person.sexo}
+                </p>
 
-              {person.ultimaOcorrencia.encontradoVivo ? (
-                <div className="bg-green-700 text-white font-bold text-center p-2 rounded-lg mt-2">
-                  Pessoa localizada!!
-                </div>
-              ) : (
-                <div className="bg-orange-400 text-black font-bold text-center p-2 rounded-lg mt-2">
-                  {daysMissing} dias do desaparecimento
-                </div>
-              )}
+                {person.ultimaOcorrencia.encontradoVivo ? (
+                  <div className="bg-green-700 text-white font-bold text-center p-2 rounded-lg mt-2">
+                    Pessoa localizada!!
+                  </div>
+                ) : (
+                  <div className="bg-orange-400 text-black font-bold text-center p-2 rounded-lg mt-2">
+                    {daysMissing} dias do desaparecimento
+                  </div>
+                )}
+              </div>
             </div>
-
             <img
               src={person.urlFoto || "/assets/img/unidentified-person.png"}
               alt="Foto da pessoa"
