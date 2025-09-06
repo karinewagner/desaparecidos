@@ -55,16 +55,16 @@ export default function SearchForm({ onFilter }: Props) {
         e.preventDefault();
         sendFilters();
       }}
-      className="p-4 rounded-md shadow-md flex flex-col bg-gray-50"
+      className="p-4 rounded-md shadow-md flex flex-col bg-transparent"
     >
-      <div className="flex flex-col text-center mb-4">
+      <div className="flex flex-col text-center mb-2 md:mb-4">
         <h2 className="text-lg md:text-2xl font-semibold">FAÇA SUA BUSCA</h2>
         <span className="text-sm md:text-base text-gray-500">
           Os dados abaixo ajudam a tornar sua busca mais específica!
         </span>
       </div>
 
-      <div className="mb-4">
+      <div className="mb-2 md:mb-4">
         <label className="block font-semibold mb-1">Nome</label>
         <input
           type="text"
@@ -76,9 +76,9 @@ export default function SearchForm({ onFilter }: Props) {
         />
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-4 mb-4">
+      <div className="flex flex-col lg:flex-row gap-2 md:gap-4 mb-2 md:mb-4">
         <div className="flex-1">
-          <p className="font-semibold mb-2">Faixa Etária</p>
+          <p className="font-semibold mb-1 md:mb-2">Faixa Etária</p>
           <div className="flex gap-2">
             <input
               type="number"
@@ -103,9 +103,9 @@ export default function SearchForm({ onFilter }: Props) {
           </div>
         </div>
 
-        <div className="flex-1">
-          <p className="font-semibold mb-2">Sexo</p>
-          <div className="flex gap-4">
+        <div className="flex-1 lg:pl-4">
+          <p className="font-semibold mb-1 md:mb-2">Sexo</p>
+          <div className="flex gap-2 md:gap-4">
             <label>
               <input
                 type="radio"
@@ -113,6 +113,7 @@ export default function SearchForm({ onFilter }: Props) {
                 value="MASCULINO"
                 checked={form.sexo === "MASCULINO"}
                 onChange={handleChange}
+                className="cursor-pointer"
               />{" "}
               Masculino
             </label>
@@ -123,15 +124,16 @@ export default function SearchForm({ onFilter }: Props) {
                 value="FEMININO"
                 checked={form.sexo === "FEMININO"}
                 onChange={handleChange}
+                className="cursor-pointer"
               />{" "}
               Feminino
             </label>
           </div>
         </div>
 
-        <div className="flex-1">
-          <p className="font-semibold mb-2">Status</p>
-          <div className="flex gap-4">
+        <div className="flex-1 lg:pl-4">
+          <p className="font-semibold mb-1 md:mb-2">Status</p>
+          <div className="flex gap-2 md:gap-4">
             <label>
               <input
                 type="radio"
@@ -139,6 +141,7 @@ export default function SearchForm({ onFilter }: Props) {
                 value="DESAPARECIDO"
                 checked={form.status === "DESAPARECIDO"}
                 onChange={handleChange}
+                className="cursor-pointer"
               />{" "}
               Desaparecido
             </label>
@@ -149,27 +152,28 @@ export default function SearchForm({ onFilter }: Props) {
                 value="LOCALIZADO"
                 checked={form.status === "LOCALIZADO"}
                 onChange={handleChange}
+                className="cursor-pointer"
               />{" "}
               Localizado
             </label>
           </div>
         </div>
-      </div>
 
-      <div className="flex gap-2 justify-center">
-        <button
-          type="button"
-          onClick={clearFilter}
-          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
-        >
-          Limpar
-        </button>
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-        >
-          Buscar
-        </button>
+        <div className="flex flex-1 gap-2 justify-center items-center">
+          <button
+            type="button"
+            onClick={clearFilter}
+            className="cursor-pointer border border-red-600 text-red-500 hover:text-white px-4 py-2 rounded hover:bg-red-600 transition"
+          >
+            Limpar
+          </button>
+          <button
+            type="submit"
+            className="cursor-pointer border border-blue-600 text-blue-600 hover:text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+          >
+            Buscar
+          </button>
+        </div>
       </div>
     </form>
   );
