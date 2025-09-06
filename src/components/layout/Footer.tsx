@@ -4,6 +4,22 @@ export default function Footer() {
       <span className="text-xs lg:text-xl">
         Desenvolvido por Karine Wagner - 2025
       </span>
+        <a
+          href="https://www.linkedin.com/in/karinedwagner/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center text-[10px] sm:text-sm md:text-base underline text-black hover:text-blue-200 hover:cursor-pointer"
+        >
+          Linkedin
+        </a>
+        <a
+          href="https://github.com/karinewagner/desaparecidos"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center text-[10px] sm:text-sm md:text-base underline text-black hover:text-blue-200 hover:cursor-pointer"
+        >
+          GitHub
+        </a>
     </footer>
   );
 }
