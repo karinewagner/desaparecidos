@@ -73,7 +73,7 @@ export default function Header() {
               href="https://github.com/karinewagner/desaparecidos"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center text-[10px] sm:text-sm md:text-base underline text-blue-400 hover:text-blue-200 hover:cursor-pointer"
+              className="flex items-center text-[10px] sm:text-sm md:text-base underline text-white hover:text-blue-100 hover:cursor-pointer"
             >
               Repositório GitHub
             </a>
