@@ -8,6 +8,7 @@ import PersonCard from "../components/home/PersonCard";
 import SearchForm from "../components/home/SearchForm";
 import Pagination from "../components/home/Pagination";
 import Alert from "../components/common/Alert";
+import { isApiError } from "../types/apiError";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
@@ -15,7 +16,6 @@ export default function Home() {
   const [length, setLength] = useState(0);
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
-  const [totalPages, setTotalPages] = useState(1);
 
   const [alert, setAlert] = useState<string | null>(null);
 
@@ -31,30 +31,38 @@ export default function Home() {
 
   const [filters, setFilters] = useState<IMissingPersonList>(defaultFilters);
 
-  const fetchData = async (params: IMissingPersonList) => {
-    setIsLoading(true);
-    try {
-      const data = await getMissingPersonList(params);
-      setPeople(data.content);
-      setLength(data.totalElements);
-      setPageIndex(data.pageable.pageNumber);
-      setPageSize(data.pageable.pageSize);
-      setTotalPages(data.totalPages);
+const fetchData = async (params: IMissingPersonList, signal?: AbortSignal) => {
+  setIsLoading(true);
+  try {
+    const data = await getMissingPersonList(params, { signal });
+    if (signal?.aborted) return;
 
-      const listSection = document.getElementById("list");
-      if (listSection) {
-        listSection.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    } catch (err: any) {
-      setAlert("Erro ao buscar dados: " + err.message);
-    } finally {
-      setIsLoading(false);
+    setPeople(data.content);
+    setLength(data.totalElements);
+    setPageIndex(data.pageable.pageNumber);
+    setPageSize(data.pageable.pageSize);
+
+    const listSection = document.getElementById("list");
+    if (listSection) {
+      listSection.scrollIntoView({ behavior: "smooth", block: "start" });
     }
-  };
+  } catch (err: any) {
+    if (err?.code === "ERR_CANCELED") return;
 
-  useEffect(() => {
-    fetchData(filters);
-  }, [filters]);
+    const msg = isApiError(err)
+      ? err.message
+      : "Erro inesperado ao buscar dados.";
+    setAlert(msg);
+  } finally {
+    if (!signal?.aborted) setIsLoading(false);
+  }
+};
+
+useEffect(() => {
+  const ac = new AbortController();
+  fetchData(filters, ac.signal);
+  return () => ac.abort();
+}, [filters]);
 
   const handlePageChange = (page: number, size: number) => {
     setFilters({ ...filters, pagina: page - 1, porPagina: size });
