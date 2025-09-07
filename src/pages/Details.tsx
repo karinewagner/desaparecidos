@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getMissingPersonDetailsById } from "../services";
 import type { IMissingPersonByIdResponse } from "../types/details";
 import Alert from "../components/common/Alert";
-import InfoDialog from "../components/details/InfoDialog";
+import { isApiError } from "../types/apiError";
+
+const InfoDialog = lazy(() => import("../components/details/InfoDialog"));
+const preloadInfoDialog = () => import("../components/details/InfoDialog");
 
 export default function Details() {
   const { id } = useParams<{ id: string }>();
@@ -14,31 +17,43 @@ export default function Details() {
   const [showDialog, setShowDialog] = useState(false);
 
   useEffect(() => {
-    if (id) {
-      fetchDetails(id);
-    }
+    if (!id) return;
+    const ac = new AbortController();
+
+    (async () => {
+      setIsLoading(true);
+      try {
+        const data = await getMissingPersonDetailsById(id, { signal: ac.signal });
+        if (ac.signal.aborted) return;
+
+        setPerson(data);
+
+        const disappearanceDate = new Date(data?.ultimaOcorrencia?.dtDesaparecimento);
+        const diffTime = Date.now() - disappearanceDate.getTime();
+        setDaysMissing(Math.floor(diffTime / (1000 * 3600 * 24)));
+
+      } catch (err: any) {
+        if (err?.code === "ERR_CANCELED" || ac.signal.aborted) return;
+
+        const msg = isApiError(err) ? err.message : "Erro inesperado ao buscar dados.";
+        setAlert(msg);
+        
+      } finally {
+        if (!ac.signal.aborted) setIsLoading(false);
+      }
+    })();
+
+    return () => ac.abort();
   }, [id]);
-
-  const fetchDetails = async (id: string) => {
-    setIsLoading(true);
-    try {
-      const data = await getMissingPersonDetailsById(id);
-      setPerson(data);
-
-      const disappearanceDate = new Date(data.ultimaOcorrencia.dtDesaparecimento);
-      const diffTime = new Date().getTime() - disappearanceDate.getTime();
-      setDaysMissing(Math.floor(diffTime / (1000 * 3600 * 24)));
-    } catch (err: any) {
-      setAlert("Erro ao buscar dados: " + err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const shareOnWhatsApp = () => {
     if (!person) return;
     const mensagem = encodeURIComponent(
-      `🚨 DESAPARECIDO 🚨\n\nNome: ${person.nome}\nÚltima localização: ${person.ultimaOcorrencia.localDesaparecimentoConcat}\nDesaparecido desde: ${new Date(person.ultimaOcorrencia.dtDesaparecimento).toLocaleDateString()}\nVestimentas: ${person.ultimaOcorrencia.ocorrenciaEntrevDesapDTO.vestimentasDesaparecido}\nAjude a encontrar! Compartilhe!`
+      `🚨 DESAPARECIDO 🚨\n\nNome: ${person?.nome}\n
+      Última localização: ${person?.ultimaOcorrencia?.localDesaparecimentoConcat}\n
+      Desaparecido desde: ${new Date(person?.ultimaOcorrencia?.dtDesaparecimento).toLocaleDateString()}\n
+      Vestimentas: ${person?.ultimaOcorrencia?.ocorrenciaEntrevDesapDTO?.vestimentasDesaparecido}\n
+      Ajude a encontrar! Compartilhe!`
     );
     window.open(`https://wa.me/?text=${mensagem}`, "_blank");
   };
@@ -56,19 +71,19 @@ export default function Details() {
             <div className="grid grid-rows-2 gap-2">
               <div className="flex items-start">
                 <Link
-                    to="/"
-                    className="flex items-center gap-1 text-xl px-4 py-2 rounded-xl shadow border border-gray-100 hover:bg-gray-200"
-                  >
-                    ⬅ Voltar
+                  to="/"
+                  className="flex items-center gap-1 text-xl px-4 py-2 rounded-xl shadow border border-gray-100 hover:bg-gray-200"
+                >
+                  ⬅ Voltar
                 </Link>
               </div>
               <div>
-                <h1 className="text-2xl font-bold">{person.nome}</h1>
+                <h1 className="text-2xl font-bold">{person?.nome}</h1>
                 <p className="text-gray-600">
-                  {person.idade} anos - {person.sexo}
+                  {person?.idade} anos - {person?.sexo}
                 </p>
 
-                {person.ultimaOcorrencia.encontradoVivo ? (
+                {person?.ultimaOcorrencia?.encontradoVivo ? (
                   <div className="bg-green-700 text-white font-bold text-center p-2 rounded-lg mt-2">
                     Pessoa localizada!!
                   </div>
@@ -80,7 +95,7 @@ export default function Details() {
               </div>
             </div>
             <img
-              src={person.urlFoto || "/assets/img/unidentified-person.png"}
+              src={person?.urlFoto || "/assets/img/unidentified-person.png"}
               alt="Foto da pessoa"
               className="object-cover rounded-2xl h-40 w-40 sm:h-60 sm:w-60 mt-4 sm:mt-0"
             />
@@ -89,30 +104,34 @@ export default function Details() {
           <div className="flex flex-col md:flex-row justify-between mt-6 gap-6">
             <div className="flex-1">
               <h2 className="text-lg font-semibold mb-2">Dados sobre o desaparecimento:</h2>
-              <p><strong>Local:</strong> {person.ultimaOcorrencia.localDesaparecimentoConcat}</p>
+              <p><strong>Local:</strong> {person?.ultimaOcorrencia?.localDesaparecimentoConcat}</p>
               <p>
                 <strong>Data do desaparecimento:</strong>{" "}
-                {new Date(person.ultimaOcorrencia.dtDesaparecimento).toLocaleDateString("pt-BR")}
+                {new Date(person?.ultimaOcorrencia?.dtDesaparecimento).toLocaleDateString("pt-BR")}
               </p>
-              <p><strong>Vestimentas:</strong>{" "}
-                {person.ultimaOcorrencia.ocorrenciaEntrevDesapDTO.vestimentasDesaparecido || "não há registro"}
+              <p>
+                <strong>Vestimentas:</strong>{" "}
+                {person?.ultimaOcorrencia?.ocorrenciaEntrevDesapDTO?.vestimentasDesaparecido || "não há registro"}
               </p>
-              <p><strong>Outras informações:</strong>{" "}
-                {person.ultimaOcorrencia.ocorrenciaEntrevDesapDTO.informacao || "não há registro"}
+              <p>
+                <strong>Outras informações:</strong>{" "}
+                {person?.ultimaOcorrencia?.ocorrenciaEntrevDesapDTO?.informacao || "não há registro"}
               </p>
             </div>
 
             <div className="flex flex-col gap-4 md:w-1/3">
               <button
+                onMouseEnter={preloadInfoDialog}
+                onFocus={preloadInfoDialog}
                 onClick={() => setShowDialog(true)}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition cursor-pointer"
               >
                 👀 Viu ou tem informações dessa pessoa?
               </button>
               <p className="text-lg">Ajude compartilhando:</p>
               <button
                 onClick={shareOnWhatsApp}
-                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition cursor-pointer"
               >
                 📲 Compartilhar no WhatsApp
               </button>
@@ -124,7 +143,18 @@ export default function Details() {
       {alert && <Alert message={alert} type="error" onClose={() => setAlert(null)} />}
 
       {showDialog && person && (
-        <InfoDialog person={person} onClose={() => setShowDialog(false)} />
+        <Suspense
+          fallback={
+            <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg">
+                <div className="h-6 w-6 rounded-full border-2 border-gray-300 border-t-blue-600 animate-spin mx-auto mb-3" />
+                <p>Carregando formulário...</p>
+              </div>
+            </div>
+          }
+        >
+          <InfoDialog person={person} onClose={() => setShowDialog(false)} />
+        </Suspense>
       )}
     </div>
   );
