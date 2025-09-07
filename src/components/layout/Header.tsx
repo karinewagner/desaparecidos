@@ -3,6 +3,7 @@ import type { IStatisticsData } from "../../types/header";
 import { getStatisticsData } from "../../services";
 import Alert from "../common/Alert";
 import CountUp from "../common/CountUp";
+import { isApiError } from "../../types/apiError";
 
 export default function Header() {
   const [statistics, setStatistics] = useState<IStatisticsData>({
@@ -12,15 +13,25 @@ export default function Header() {
   const [alert, setAlert] = useState<{ message: string; type: "error" | "success" | "info" } | null>(null);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const ac = new AbortController();
+
+    (async () => {
       try {
-        const data = await getStatisticsData();
+        const data = await getStatisticsData({ signal: ac.signal });
+        if (ac.signal.aborted) return;
         setStatistics(data);
-      } catch (err: any) {
-        setAlert({ message: "Erro ao buscar estatísticas", type: "error" });
+
+      } catch (err: unknown) {
+        if (ac.signal.aborted) return;
+
+        const message = isApiError(err)
+          ? err.message
+          : "Erro inesperado ao buscar estatísticas.";
+        setAlert({ message, type: "error" });
       }
-    };
-    fetchStats();
+    })();
+
+    return () => ac.abort();
   }, []);
 
   return (
