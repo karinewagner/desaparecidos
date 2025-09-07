@@ -1,4 +1,3 @@
-import React from "react";
 import IconButton from "../common/IconButton";
 import type { PaginationProps } from "../../types/pagination";
 
@@ -117,31 +116,5 @@ export default function Pagination({
 
       </div>
     </nav>
-  );
-}
-
-function IconBtn({
-  children,
-  onClick,
-  disabled,
-  ariaLabel,
-}: {
-  children: React.ReactNode;
-  onClick: () => void;
-  disabled?: boolean;
-  ariaLabel: string;
-}) {
-  return (
-    <button
-      type="button"
-      aria-label={ariaLabel}
-      onClick={onClick}
-      disabled={disabled}
-      className="p-2 rounded-md border bg-white text-gray-700 hover:bg-gray-100
-                 disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none
-                 focus-visible:ring-2 focus-visible:ring-blue-500 transition"
-    >
-      {children}
-    </button>
   );
 }
