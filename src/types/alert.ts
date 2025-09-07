@@ -1,6 +1,8 @@
-export interface AlertProps { 
+export type AlertType = "success" | "error" | "info";
+
+export interface AlertProps {
   message: string;
-  type?: "success" | "error" | "info";
+  type?: AlertType;
   duration?: number;
   onClose: () => void;
 }
