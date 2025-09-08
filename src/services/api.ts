@@ -4,7 +4,6 @@ import type { ApiError } from "../types/apiError";
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "https://abitus-api.geia.vip",
   timeout: 15_000,
-  headers: { "Content-Type": "application/json" },
 });
 
 api.interceptors.request.use((config) => {
@@ -41,9 +40,6 @@ function normalizeAxiosError(error: AxiosError): ApiError {
       isNetworkError: true,
     };
   }
-
-console.log("----->>> ", error.response);
-
 
   const status = error.response?.status ?? null;
 
