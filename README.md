@@ -90,11 +90,11 @@ Puxe a imagem diretamente do DockerHub e execute.
 
 1️⃣ Puxe a imagem do DockerHub:
    ```bash
-   docker pull karinewagner/projeto-desaparecidos-2025
+   docker pull karinewagner/karine-desaparecidos
    ```
 2️⃣ Rode o container:
    ```bash
-   docker run -p 8080:80 karinewagner/projeto-desaparecidos-2025
+   docker run -p 8080:80 karinewagner/karine-desaparecidos
    ```
 3️⃣ Acesse no navegador: 
 
