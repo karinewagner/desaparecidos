@@ -85,7 +85,22 @@ docker run -p 8080:80 karine-desaparecidos
 http://localhost:8080/
 
 
-> **Nota**: Certifique-se de que o Docker está instalado e rodando em sua máquina.
+### 🐳 Rodando a imagem do DockerHub
+Puxe a imagem diretamente do DockerHub e execute.
+
+1️⃣ Puxe a imagem do DockerHub:
+   ```bash
+   docker pull karinewagner/projeto-desaparecidos-2025
+   ```
+2️⃣ Rode o container:
+   ```bash
+   docker run -p 8080:80 karinewagner/projeto-desaparecidos-2025
+   ```
+3️⃣ Acesse no navegador: 
+
+http://localhost:8080
+
+> **Nota**: Certifique-se de que o Docker está instalado e rodando em sua máquina para as opções 2 e 3.
 
 ---
 ## 🔗 API utilizada
