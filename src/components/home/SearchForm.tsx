@@ -1,52 +1,78 @@
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
 import type { IMissingPersonList } from "../../types/home";
 
 interface Props {
+  initialValues: IMissingPersonList;
   onFilter: (filters: IMissingPersonList) => void;
 }
 
-export default function SearchForm({ onFilter }: Props) {
-  const [form, setForm] = useState<IMissingPersonList>({
-    nome: "",
-    faixaIdadeInicial: 0,
-    faixaIdadeFinal: 0,
-    sexo: "",
-    status: "DESAPARECIDO",
-    pagina: 0,
-    porPagina: 10,
-  });
+export default function SearchForm({ initialValues, onFilter }: Props) {
+  const [form, setForm] = useState<IMissingPersonList>(initialValues);
+
+  useEffect(() => {
+    setForm(initialValues);
+  }, [initialValues]);
+
+  const toNumber = (v: string) => {
+    if (v === "" || v === undefined || v === null) return 0;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : 0;
+  };
+
+  const normalize = (f: IMissingPersonList): IMissingPersonList => {
+    let min = toNumber(String(f.faixaIdadeInicial));
+    let max = toNumber(String(f.faixaIdadeFinal));
+    if (min && max && min > max) [min, max] = [max, min];
+
+    return {
+      ...f,
+      faixaIdadeInicial: min,
+      faixaIdadeFinal: max,
+      pagina: 0,
+      porPagina: f.porPagina || initialValues.porPagina || 10,
+      sexo: (f.sexo || "") as "" | "MASCULINO" | "FEMININO",
+      status: (f.status || "DESAPARECIDO") as "DESAPARECIDO" | "LOCALIZADO",
+    };
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
 
     if (name === "sexo") {
-      setForm({ ...form, sexo: value as "MASCULINO" | "FEMININO" | "" });
-    } else if (name === "status") {
-      setForm({ ...form, status: value as "DESAPARECIDO" | "LOCALIZADO" });
-    } else if (name === "faixaIdadeInicial" || name === "faixaIdadeFinal") {
-      setForm({ ...form, [name]: Number(value) });
-    } else {
-      setForm({ ...form, [name]: value });
+      setForm((s) => ({ ...s, sexo: value as "" | "MASCULINO" | "FEMININO" }));
+      return;
     }
+    if (name === "status") {
+      setForm((s) => ({ ...s, status: value as "DESAPARECIDO" | "LOCALIZADO" }));
+      return;
+    }
+    if (name === "faixaIdadeInicial" || name === "faixaIdadeFinal") {
+      setForm((s) => ({ ...s, [name]: toNumber(value) }));
+      return;
+    }
+    if (type === "number") {
+      setForm((s) => ({ ...s, [name]: toNumber(value) }));
+      return;
+    }
+    setForm((s) => ({ ...s, [name]: value }));
   };
 
   const clearFilter = () => {
     const reseted: IMissingPersonList = {
+      ...initialValues,
       nome: "",
       faixaIdadeInicial: 0,
       faixaIdadeFinal: 0,
       sexo: "",
       status: "DESAPARECIDO",
       pagina: 0,
-      porPagina: 10,
     };
     setForm(reseted);
-    onFilter(reseted);
+    onFilter(normalize(reseted));
   };
 
   const sendFilters = () => {
-    onFilter(form);
+    onFilter(normalize(form));
   };
 
   return (
@@ -65,11 +91,12 @@ export default function SearchForm({ onFilter }: Props) {
       </div>
 
       <div className="mb-2 md:mb-4">
-        <label className="block font-semibold mb-1">Nome</label>
+        <label className="block font-semibold mb-1" htmlFor="nome">Nome</label>
         <input
+          id="nome"
           type="text"
           name="nome"
-          value={form.nome}
+          value={form.nome || ""}
           onChange={handleChange}
           placeholder="Digite um nome"
           className="w-full border rounded px-3 py-2"
@@ -83,20 +110,20 @@ export default function SearchForm({ onFilter }: Props) {
             <input
               type="number"
               name="faixaIdadeInicial"
-              min="0"
-              max="99"
+              min={0}
+              max={120}
               placeholder="Idade mínima"
-              value={form.faixaIdadeInicial}
+              value={form.faixaIdadeInicial ?? 0}
               onChange={handleChange}
               className="w-full border rounded px-3 py-2"
             />
             <input
               type="number"
               name="faixaIdadeFinal"
-              min="0"
-              max="99"
+              min={0}
+              max={120}
               placeholder="Idade máxima"
-              value={form.faixaIdadeFinal}
+              value={form.faixaIdadeFinal ?? 0}
               onChange={handleChange}
               className="w-full border rounded px-3 py-2"
             />
@@ -105,8 +132,19 @@ export default function SearchForm({ onFilter }: Props) {
 
         <div className="flex-1 lg:pl-4">
           <p className="font-semibold mb-1 md:mb-2">Sexo</p>
-          <div className="flex gap-2 md:gap-4">
-            <label>
+          <div className="flex gap-3 md:gap-4 items-center">
+            <label className="inline-flex items-center gap-1">
+              <input
+                type="radio"
+                name="sexo"
+                value=""
+                checked={form.sexo === ""}
+                onChange={handleChange}
+                className="cursor-pointer"
+              />
+              Todos
+            </label>
+            <label className="inline-flex items-center gap-1">
               <input
                 type="radio"
                 name="sexo"
@@ -114,10 +152,10 @@ export default function SearchForm({ onFilter }: Props) {
                 checked={form.sexo === "MASCULINO"}
                 onChange={handleChange}
                 className="cursor-pointer"
-              />{" "}
+              />
               Masculino
             </label>
-            <label>
+            <label className="inline-flex items-center gap-1">
               <input
                 type="radio"
                 name="sexo"
@@ -125,7 +163,7 @@ export default function SearchForm({ onFilter }: Props) {
                 checked={form.sexo === "FEMININO"}
                 onChange={handleChange}
                 className="cursor-pointer"
-              />{" "}
+              />
               Feminino
             </label>
           </div>
@@ -133,8 +171,8 @@ export default function SearchForm({ onFilter }: Props) {
 
         <div className="flex-1 lg:pl-4">
           <p className="font-semibold mb-1 md:mb-2">Status</p>
-          <div className="flex gap-2 md:gap-4">
-            <label>
+          <div className="flex gap-3 md:gap-4 items-center">
+            <label className="inline-flex items-center gap-1">
               <input
                 type="radio"
                 name="status"
@@ -142,10 +180,10 @@ export default function SearchForm({ onFilter }: Props) {
                 checked={form.status === "DESAPARECIDO"}
                 onChange={handleChange}
                 className="cursor-pointer"
-              />{" "}
+              />
               Desaparecido
             </label>
-            <label>
+            <label className="inline-flex items-center gap-1">
               <input
                 type="radio"
                 name="status"
@@ -153,17 +191,17 @@ export default function SearchForm({ onFilter }: Props) {
                 checked={form.status === "LOCALIZADO"}
                 onChange={handleChange}
                 className="cursor-pointer"
-              />{" "}
+              />
               Localizado
             </label>
           </div>
         </div>
 
-        <div className="flex flex-1 gap-2 justify-center items-center">
+        <div className="flex flex-1 gap-2 justify-center items-end lg:items-center">
           <button
             type="button"
             onClick={clearFilter}
-            className="cursor-pointer border border-red-600 text-red-500 hover:text-white px-4 py-2 rounded hover:bg-red-600 transition"
+            className="cursor-pointer border border-red-600 text-red-600 hover:text-white px-4 py-2 rounded hover:bg-red-600 transition"
           >
             Limpar
           </button>

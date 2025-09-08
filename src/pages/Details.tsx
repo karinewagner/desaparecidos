@@ -1,5 +1,5 @@
 import { useEffect, useState, lazy, Suspense } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { getMissingPersonDetailsById } from "../services";
 import type { IMissingPersonByIdResponse } from "../types/details";
 import Alert from "../components/common/Alert";
@@ -8,8 +8,14 @@ import { isApiError } from "../types/apiError";
 const InfoDialog = lazy(() => import("../components/details/InfoDialog"));
 const preloadInfoDialog = () => import("../components/details/InfoDialog");
 
+type FromState = { from?: { pathname: string; search?: string } };
+
 export default function Details() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const state = (location.state as FromState) || {};
+
   const [isLoading, setIsLoading] = useState(false);
   const [person, setPerson] = useState<IMissingPersonByIdResponse | null>(null);
   const [daysMissing, setDaysMissing] = useState(0);
@@ -31,13 +37,10 @@ export default function Details() {
         const disappearanceDate = new Date(data?.ultimaOcorrencia?.dtDesaparecimento);
         const diffTime = Date.now() - disappearanceDate.getTime();
         setDaysMissing(Math.floor(diffTime / (1000 * 3600 * 24)));
-
       } catch (err: any) {
         if (err?.code === "ERR_CANCELED" || ac.signal.aborted) return;
-
         const msg = isApiError(err) ? err.message : "Erro inesperado ao buscar dados.";
         setAlert(msg);
-        
       } finally {
         if (!ac.signal.aborted) setIsLoading(false);
       }
@@ -46,14 +49,25 @@ export default function Details() {
     return () => ac.abort();
   }, [id]);
 
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      return;
+    }
+
+    const search = state.from?.search ?? "";
+    navigate({ pathname: "/", search });
+  };
+
   const shareOnWhatsApp = () => {
     if (!person) return;
     const mensagem = encodeURIComponent(
-      `🚨 DESAPARECIDO 🚨\n\nNome: ${person?.nome}\n
-      Última localização: ${person?.ultimaOcorrencia?.localDesaparecimentoConcat}\n
-      Desaparecido desde: ${new Date(person?.ultimaOcorrencia?.dtDesaparecimento).toLocaleDateString()}\n
-      Vestimentas: ${person?.ultimaOcorrencia?.ocorrenciaEntrevDesapDTO?.vestimentasDesaparecido}\n
-      Ajude a encontrar! Compartilhe!`
+      `🚨 DESAPARECIDO 🚨\n\n` +
+      `Nome: ${person.nome}\n` +
+      `Última localização: ${person.ultimaOcorrencia.localDesaparecimentoConcat}\n` +
+      `Desaparecido desde: ${new Date(person.ultimaOcorrencia.dtDesaparecimento).toLocaleDateString("pt-BR")}\n` +
+      `Vestimentas: ${person?.ultimaOcorrencia?.ocorrenciaEntrevDesapDTO?.vestimentasDesaparecido || "—"}\n` +
+      `Ajude a encontrar! Compartilhe!`
     );
     window.open(`https://wa.me/?text=${mensagem}`, "_blank");
   };
@@ -70,20 +84,20 @@ export default function Details() {
           <div className="flex flex-col sm:flex-row sm:justify-between items-center">
             <div className="grid grid-rows-2 gap-2">
               <div className="flex items-start">
-                <Link
-                  to="/"
+                <button
+                  onClick={handleBack}
                   className="flex items-center gap-1 text-xl px-4 py-2 rounded-xl shadow border border-gray-100 hover:bg-gray-200"
                 >
                   ⬅ Voltar
-                </Link>
+                </button>
               </div>
               <div>
-                <h1 className="text-2xl font-bold">{person?.nome}</h1>
+                <h1 className="text-2xl font-bold">{person.nome}</h1>
                 <p className="text-gray-600">
-                  {person?.idade} anos - {person?.sexo}
+                  {person.idade} anos - {person.sexo}
                 </p>
 
-                {person?.ultimaOcorrencia?.encontradoVivo ? (
+                {person.ultimaOcorrencia.encontradoVivo ? (
                   <div className="bg-green-700 text-white font-bold text-center p-2 rounded-lg mt-2">
                     Pessoa localizada!!
                   </div>
@@ -95,7 +109,7 @@ export default function Details() {
               </div>
             </div>
             <img
-              src={person?.urlFoto || "/assets/img/unidentified-person.png"}
+              src={person.urlFoto || "/assets/img/unidentified-person.png"}
               alt="Foto da pessoa"
               className="object-cover rounded-2xl h-40 w-40 sm:h-60 sm:w-60 mt-4 sm:mt-0"
             />
@@ -104,10 +118,10 @@ export default function Details() {
           <div className="flex flex-col md:flex-row justify-between mt-6 gap-6">
             <div className="flex-1">
               <h2 className="text-lg font-semibold mb-2">Dados sobre o desaparecimento:</h2>
-              <p><strong>Local:</strong> {person?.ultimaOcorrencia?.localDesaparecimentoConcat}</p>
+              <p><strong>Local:</strong> {person.ultimaOcorrencia.localDesaparecimentoConcat}</p>
               <p>
                 <strong>Data do desaparecimento:</strong>{" "}
-                {new Date(person?.ultimaOcorrencia?.dtDesaparecimento).toLocaleDateString("pt-BR")}
+                {new Date(person.ultimaOcorrencia.dtDesaparecimento).toLocaleDateString("pt-BR")}
               </p>
               <p>
                 <strong>Vestimentas:</strong>{" "}
